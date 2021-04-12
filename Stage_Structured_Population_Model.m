@@ -15,6 +15,8 @@ close all
 % n(:,t+1) = A*n(:,t)
 % if A has single real positive dominant eigenvalue, then n(:,t) =
 % c*lambda^(t)*w where w is the corresponding eigenvector
+% here lambda reflects the growth rate of the population while w reflects
+% the structure of the population
 
 % if A is k*k, then A is power positive if and only if A^(k^2-2k+2) is
 % positive
