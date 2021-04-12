@@ -1,7 +1,7 @@
 %% Sea_Turtle_Example_of_Structured_Population_Model
 
 % We should first construct the projection matrix A
-% Before that, we have make two assumptions
+% Before that, we have make two assumptions: 
 % 1st: All the parameters in A do not change over time, at least during the
 % observation
 % 2st: All parameters is uniform within each stage among all ages
