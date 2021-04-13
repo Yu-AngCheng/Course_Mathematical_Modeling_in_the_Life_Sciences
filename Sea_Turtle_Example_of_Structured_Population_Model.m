@@ -63,7 +63,7 @@ lambda_estimate=exp(ppp(1));
  
 dr = diag(D_r);
 [lambda,indr] = max(dr); % find dominant eigenvalue
-w  = W(:,indr); % corresponding (dominant) eigenvector
+w  = W(:,indr); % corresponding eigenvector
 
 dl = diag(D_l);
 [lambda,indl] = max(dl); % find dominant eigenvalue
