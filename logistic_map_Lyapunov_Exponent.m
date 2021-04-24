@@ -19,5 +19,7 @@ for i = 1:length(rr)
     end
     Lyapunov_Exponent(i) = 1/tmax*sum(log(abs(r-2*r*x_temp)));
 end
-plot(rr,Lyapunov_Exponent);
+plot(rr,Lyapunov_Exponent,'LineWidth',1);
+hold on
+plot(rr,zeros(size(rr)),'--k');
 ylabel('Lyapunov Exponent','FontSize',15);xlabel('r','FontSize',15)
