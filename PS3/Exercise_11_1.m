@@ -34,7 +34,7 @@ seq_num = 10000;
 rng default 
 rr = rand(seq_num,seq_length); rr_mean = mean(rr,2);
 % the sample mean follows a normal distribution with mean = 0.5 and
-% variance = (1/12)/sqrt(10000);
+% variance = (1/12)/10000;
 
 % to do hypothesis testing to test the CLT theorm
 analytic_mean = 0.5;
