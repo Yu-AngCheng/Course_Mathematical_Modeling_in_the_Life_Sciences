@@ -16,7 +16,7 @@ rng default; r = rand(1,num);
 % using for loop
 seq = zeros(1,num);
 for i = 1:num
-    if r(i) < 0
+    if r(i) < 0.6
         seq(i) = 1;
     end
 end
