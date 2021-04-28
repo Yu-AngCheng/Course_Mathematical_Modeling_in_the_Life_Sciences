@@ -28,9 +28,28 @@ counts = h.Values;
 chi2 = sum((counts-num/nbins).^2./(num/nbins));
 p = chi2cdf(chi2,nbins-1,'upper');
 
+
+% --------------------------------------------------------------------%
 % to check the CLT theorm
 seq_length = 100000;
-seq_num = 10000;
+seq_num = 1000;
+rng default 
+rr = rand(seq_num,seq_length); rr_mean = mean(rr,2);
+% the sample mean follows a normal distribution with mean = 0.5 and
+% variance = (1/12)/10000;
+
+% to do hypothesis testing to test the CLT theorm
+analytic_mean = 0.5;
+analytic_variance = (1/12)/seq_length;
+[h,p] = kstest((rr_mean - analytic_mean)./sqrt(analytic_variance));
+E_rr_mean = mean(rr_mean);
+E_rr_var = var(rr_mean);
+
+
+% --------------------------------------------------------------------%
+% to check the CLT theorm
+seq_length = 10000;
+seq_num = 1000;
 rng default 
 rr = rand(seq_num,seq_length); rr_mean = mean(rr,2);
 % the sample mean follows a normal distribution with mean = 0.5 and
