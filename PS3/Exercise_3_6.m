@@ -60,8 +60,8 @@ for i = 2:tmax+1
     end
 end
 
-nRun = 10;
-numbins = 50;
+nRun = 20;
+numbins= 60;
 figure
 subplot(1,2,1);
 h1 = histogram(dwell_time_state1,numbins,'Normalization','probability');
@@ -69,35 +69,45 @@ counts1 = h1.Values;
 xvals1 = (h1.BinEdges(2:end)+h1.BinEdges(1:end-1))/2;
 % one exponential
 for iRun = 1:nRun
-    [fitObj_tmp{iRun}, gof] = fit(xvals1', counts1', fittype('exp1'));
+    fo = fitoptions('Method','NonlinearLeastSquares',...
+                    'Lower', [0, -Inf],...
+                    'Upper', [Inf, 0],...
+                    'StartPoint', [rand(), -rand()]);
+    ft = fittype('a*exp(b*x)', 'options', fo, 'independent', 'x');
+    [fitObj_tmp{iRun}, gof] = fit(xvals1', counts1', ft);
     rmse_temp(iRun) = gof.rmse;
 end
 [~, idx_opt] = min(rmse_temp);fitObj_close_one = fitObj_tmp{idx_opt};
-a1_close_est_one = fitObj_close_one.a; lambda1_close_est_one = fitObj_close_one.b;
+a1_close_est_one = fitObj_close_one.a; lambda1_close_est_one = exp(fitObj_close_one.b);
 % two exponential
 for iRun = 1:nRun
-    [fitObj_tmp{iRun}, gof] = fit(xvals1', counts1', fittype('exp2'));
+    fo = fitoptions('Method','NonlinearLeastSquares',...
+                    'Lower', [0, -Inf, 0, -Inf],...
+                    'Upper', [Inf, 0, Inf, 0],...
+                    'StartPoint', [rand(), -rand(),rand(), -rand()]);
+    ft = fittype('a*exp(b*x)+c*exp(d*x)', 'options', fo, 'independent', 'x');
+    [fitObj_tmp{iRun}, gof] = fit(xvals1', counts1', ft);
     rmse_temp(iRun) = gof.rmse;
 end
 [~, idx_opt] = min(rmse_temp);fitObj_close_two = fitObj_tmp{idx_opt};
-a1_close_est_two = fitObj_close_two.a; lambda1_close_est_two = fitObj_close_two.b;
-a2_close_est_two = fitObj_close_two.c; lambda2_close_est_two = fitObj_close_two.d;
+a1_close_est_two = fitObj_close_two.a; lambda1_close_est_two = exp(fitObj_close_two.b);
+a2_close_est_two = fitObj_close_two.c; lambda2_close_est_two = exp(fitObj_close_two.d);
 % three exponential(to exclude the effect of parameter numbers)
 % the check the value of a3
 % if a3 is near 0, then the third exponential is not necessary
 for iRun = 1:nRun
     fo = fitoptions('Method','NonlinearLeastSquares',...
-                    'Lower', [0, 0, 0, 0, 0, 0],...
-                    'Upper', [Inf, 1, Inf, 1, Inf, 1],...
-                    'StartPoint', [1, 0.5, 1, 0.5, 0, 0.5]);
-    ft = fittype('a1.*lambda1.^x+a2.*lambda2.^x+a3.*lambda3.^x', 'options', fo, 'independent', 'x');
+                    'Lower', [0, -Inf, 0, -Inf, 0, -Inf],...
+                    'Upper', [Inf, 0, Inf, 0, Inf, 0],...
+                    'StartPoint', [rand(), -rand(), rand(), -rand(), rand(), -rand()]);
+    ft = fittype('a*exp(b*x)+c*exp(d*x)+e*exp(f*x)', 'options', fo, 'independent', 'x');
     [fitObj_tmp{iRun}, gof] = fit(xvals1', counts1', ft);
     rmse_temp(iRun) = gof.rmse;
 end
 [~, idx_opt] = min(rmse_temp);fitObj_close_three = fitObj_tmp{idx_opt};
-a1_close_est_three = fitObj_close_three.a1; lambda1_close_est_three = fitObj_close_three.lambda1;
-a2_close_est_three = fitObj_close_three.a2; lambda2_close_est_three = fitObj_close_three.lambda2;
-a3_close_est_three = fitObj_close_three.a3; lambda3_close_est_three = fitObj_close_three.lambda3;
+a1_close_est_three = fitObj_close_three.a; lambda1_close_est_three = exp(fitObj_close_three.b);
+a2_close_est_three = fitObj_close_three.c; lambda2_close_est_three = exp(fitObj_close_three.d);
+a3_close_est_three = fitObj_close_three.e; lambda3_close_est_three = exp(fitObj_close_three.f);
 hold on; line1 = plot(fitObj_close_one,'-r',xvals1,counts1,'-g');
 hold on; line1 = [line1, plot(fitObj_close_two,'-k',xvals1,counts1,'-g')];
 hold on; line1 = [line1, plot(fitObj_close_three,'-b',xvals1,counts1,'-g')];
@@ -111,35 +121,45 @@ counts2 = h2.Values;
 xvals2 = (h2.BinEdges(2:end)+h2.BinEdges(1:end-1))/2;
 % one exponential
 for iRun = 1:nRun
-    [fitObj_tmp{iRun}, gof] = fit(xvals2', counts2',fittype('exp1'));
+    fo = fitoptions('Method','NonlinearLeastSquares',...
+                    'Lower', [0, -Inf],...
+                    'Upper', [Inf, 0],...
+                    'StartPoint', [rand(), -rand()]);
+    ft = fittype('a*exp(b*x)', 'options', fo, 'independent', 'x');
+    [fitObj_tmp{iRun}, gof] = fit(xvals2', counts2',ft);
     rmse_temp(iRun) = gof.rmse;
 end
 [~, idx_opt] = min(rmse_temp);fitObj_open_one = fitObj_tmp{idx_opt};
-a1_open_est_one = fitObj_open_one.a; lambda1_open_est_one = fitObj_open_one.b;
+a1_open_est_one = fitObj_open_one.a; lambda1_open_est_one = exp(fitObj_open_one.b);
 % two exponential
 for iRun = 1:nRun
-    [fitObj_tmp{iRun}, gof] = fit(xvals2', counts2',fittype('exp2'));
+    fo = fitoptions('Method','NonlinearLeastSquares',...
+                    'Lower', [0, -Inf, 0, -Inf],...
+                    'Upper', [Inf, 0, Inf, 0],...
+                    'StartPoint', [rand(), -rand(),rand(), -rand()]);
+    ft = fittype('a*exp(b*x)+c*exp(d*x)', 'options', fo, 'independent', 'x');
+    [fitObj_tmp{iRun}, gof] = fit(xvals2', counts2', ft);
     rmse_temp(iRun) = gof.rmse;
 end
 [~, idx_opt] = min(rmse_temp);fitObj_open_two = fitObj_tmp{idx_opt};
-a1_open_est_two = fitObj_open_two.a; lambda1_open_est_two = fitObj_open_two.b;
-a2_open_est_two = fitObj_open_two.c; lambda2_open_est_two = fitObj_open_two.d;
+a1_open_est_two = fitObj_open_two.a; lambda1_open_est_two = exp(fitObj_open_two.b);
+a2_open_est_two = fitObj_open_two.c; lambda2_open_est_two = exp(fitObj_open_two.d);
 % three exponential(to exclude the effect of parameter numbers)
 % the check the value of a3
 % if a3 is near 0, then the third exponential is not necessary
 for iRun = 1:nRun
     fo = fitoptions('Method','NonlinearLeastSquares',...
-                    'Lower', [0, 0, 0, 0, 0, 0],...
-                    'Upper', [Inf, 1, Inf, 1, Inf, 1],...
-                    'StartPoint', [1, 0.5, 1, 0.5, 0, 0.5]);
-    ft = fittype('a1.*lambda1.^x+a2.*lambda2.^x+a3.*lambda3.^x', 'options', fo, 'independent', 'x');
+                    'Lower', [0, -Inf, 0, -Inf, 0, -Inf],...
+                    'Upper', [Inf, 0, Inf, 0, Inf, 0],...
+                    'StartPoint', [rand(), -rand(), rand(), -rand(), rand(), -rand()]);
+    ft = fittype('a*exp(b*x)+c*exp(d*x)+e*exp(f*x)', 'options', fo, 'independent', 'x');
     [fitObj_tmp{iRun}, gof] = fit(xvals2', counts2', ft);
     rmse_temp(iRun) = gof.rmse;
 end
 [~, idx_opt] = min(rmse_temp);fitObj_open_three = fitObj_tmp{idx_opt};
-a1_open_est_three = fitObj_open_three.a1; lambda1_open_est_three = fitObj_open_three.lambda1;
-a2_open_est_three = fitObj_open_three.a2; lambda2_open_est_three = fitObj_open_three.lambda2;
-a3_open_est_three = fitObj_open_three.a3; lambda3_open_est_three = fitObj_open_three.lambda3;
+a1_open_est_three = fitObj_open_three.a; lambda1_open_est_three = exp(fitObj_open_three.b);
+a2_open_est_three = fitObj_open_three.c; lambda2_open_est_three = exp(fitObj_open_three.d);
+a3_open_est_three = fitObj_open_three.e; lambda3_open_est_three = exp(fitObj_open_three.f);
 hold on; line2 = plot(fitObj_open_one,'r',xvals2,counts2,'-g');
 hold on; line2 = [line2, plot(fitObj_open_two,'k',xvals2,counts2,'-g')];
 hold on; line2 = [line2, plot(fitObj_open_three,'b',xvals2,counts2,'-g')];
