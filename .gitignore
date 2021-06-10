@@ -11,3 +11,5 @@ Project/steinmetz_part2.npz
 Project/steinmetz_st.npz
 Project/steinmetz_WAV.npz
 temp.*
+*.xml
+*.iml
