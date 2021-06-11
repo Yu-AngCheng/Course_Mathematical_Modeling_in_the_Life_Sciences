@@ -68,7 +68,7 @@ for nState in statenumberlist:
 
             print('Percent:  {0:1.3g}%'.format(count / (len(statenumberlist) * nTrial * nAreas) * 100))
 
-            Y = allFiringrate[area, trial, :].reshape(-1, 1)
+            Y = allFiringrate[area,trial, :].transpose(1,0)
             count = count + 1
             if np.isnan(Y).all():
                 continue
