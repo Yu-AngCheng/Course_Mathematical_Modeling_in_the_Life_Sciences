@@ -1,8 +1,10 @@
 import numpy as np
 import hmmlearn.hmm as hmm
-import scipy.io
+import scipy.io as io
 import time as tm
+import os
 from datetime import datetime
+import matplotlib.pyplot as plt
 
 
 def fitHMM(Y, nstate, nfeature, maxrun):
@@ -10,13 +12,7 @@ def fitHMM(Y, nstate, nfeature, maxrun):
     scorelist = list()
     for run in range(maxrun):
         tempmodel = hmm.GaussianHMM(n_components=nstate,
-                                    covariance_type='full',
-                                    startprob_prior=1.0,
-                                    transmat_prior=1.0,
-                                    means_prior=0,
-                                    means_weight=0,
-                                    covars_prior=0.01,
-                                    covars_weight=1,
+                                    covariance_type='diag',
                                     n_iter=10000, tol=1e-5)
         tempmodel.fit(Y)
         modellist.append(tempmodel)
@@ -27,6 +23,8 @@ def fitHMM(Y, nstate, nfeature, maxrun):
 
 
 # load data
+if os.path.isfile("HMMFIT.npy"):
+    raise Exception("!!'HMMFIT.npy' already exists!!")
 alldat = np.load('Steinmetz_main_braingroup.npy', allow_pickle=True)
 allFiringrate = np.concatenate([alldat[k]['groupFiringRate']
                                 for k in range(len(alldat))], axis=1)
@@ -45,7 +43,7 @@ brain_groups = ["VISa", "VISam", "VISl", "VISp", "VISpm", "VISrl",  # visual cor
                 "ACB", "CP", "GPe", "LS", "LSc", "LSr", "MS", "OT", "SNr", "SI",  # basal ganglia
                 "BLA", "BMA", "EP", "EPd", "MEA"  # cortical subplate
                 ]
-statenumberlist = [2]
+statenumberlist = [1, 2, 3, 4, 5]
 maxrun = 10
 nFeature = 1
 nTrial = allFiringrate.shape[1]
@@ -97,7 +95,6 @@ for nState in statenumberlist:
     temp['covars'] = covars
     temp['transmat'] = transmat
     temp['converged'] = converged
-    HMMFIT = np.concatenate((HMMFIT,np.array([temp])))
+    HMMFIT = np.concatenate((HMMFIT, np.array([temp])))
 
 np.save('HMMFIT.npy', HMMFIT)
-
