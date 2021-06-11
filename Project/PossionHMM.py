@@ -126,7 +126,7 @@ class PoissonHMM(_BaseHMM):
         self.means_ = np.asarray(self.means_)
         self.n_features = self.means_.shape[1]
 
-    def _compute_log_likelihood(self, X): # ?
+    def _compute_log_likelihood(self, X):
         logp = np.hstack(log_possion_mass(X, lams) for lams in self.means_)
         return logp
 
