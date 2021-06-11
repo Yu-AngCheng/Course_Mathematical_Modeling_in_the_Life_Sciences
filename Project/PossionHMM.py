@@ -27,9 +27,9 @@ def _check_and_set_n_features(model, X):
 
 def log_possion_mass(X, lams):
     n_samples, n_dim = X.shape
-    logp = np.zeros((n_samples,))
+    logp = np.zeros((n_samples,1))
     for dim in np.arange(n_dim):
-        logp = logp + poisson.stats(X[:, dim], lams[dim])
+        logp = logp + poisson.logpmf(X[:, dim], lams[dim])[:, None]
     return logp
 
 class PoissonHMM(_BaseHMM):
