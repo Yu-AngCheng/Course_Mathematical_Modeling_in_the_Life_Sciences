@@ -6,7 +6,7 @@ fname = []
 for j in range(3):
     fname.append('steinmetz_part%d.npz' % j)
     if not os.path.isfile(fname[j]):
-        print("!!! No data !!!")
+        raise Exception("!!! No data !!!")
 
 # Data loading
 alldat = np.array([])
