@@ -43,7 +43,7 @@ brain_groups = ["VISa", "VISam", "VISl", "VISp", "VISpm", "VISrl",  # visual cor
                 "ACB", "CP", "GPe", "LS", "LSc", "LSr", "MS", "OT", "SNr", "SI",  # basal ganglia
                 "BLA", "BMA", "EP", "EPd", "MEA"  # cortical subplate
                 ]
-statenumberlist = [1, 2, 3, 4, 5]
+statenumberlist = [3]
 maxrun = 10
 nFeature = 1
 nTrial = allFiringrate.shape[1]
@@ -51,7 +51,7 @@ nAreas = 6
 nBin = allFiringrate.shape[2]
 Gaussian_HMMFIT = np.array([])
 count = 0
-
+errorTrial = []
 for nState in statenumberlist:
 
     statechain = np.full([nTrial, nAreas, nBin], np.nan)
@@ -63,6 +63,7 @@ for nState in statenumberlist:
     transmat = np.full([nTrial, nAreas, nState, nState], np.nan)
 
     for trial in range(nTrial):
+
         tic = datetime.now()
         for area in range(nAreas):
 
@@ -73,15 +74,18 @@ for nState in statenumberlist:
             if np.isnan(Y).all():
                 continue
             else:
-                finalmodel = fitHMM(Y, nState, nFeature, maxrun)
+                try:
+                    finalmodel = fitHMM(Y, nState, nFeature, maxrun)
+                    statechain[trial, area, :] = finalmodel.predict(Y)
+                    statechain_probability[trial, area, :, :] = finalmodel.predict_proba(Y)
+                    converged[trial, area] = finalmodel.monitor_.converged
+                    minusloglikelihood[trial, area] = - finalmodel.score(Y)
+                    means[trial, area, :, :] = finalmodel.means_
+                    covars[trial, area, :, :, :] = finalmodel.covars_
+                    transmat[trial, area, :, :] = finalmodel.transmat_
+                except:
+                    errorTrial.append(trial)
 
-            statechain[trial, area, :] = finalmodel.predict(Y)
-            statechain_probability[trial, area, :, :] = finalmodel.predict_proba(Y)
-            converged[trial, area] = finalmodel.monitor_.converged
-            minusloglikelihood[trial, area] = - finalmodel.score(Y)
-            means[trial, area, :, :] = finalmodel.means_
-            covars[trial, area, :, :, :] = finalmodel.covars_
-            transmat[trial, area, :, :] = finalmodel.transmat_
 
         toc = datetime.now()
         print('Elapsed time: %f seconds' % (toc - tic).total_seconds())
@@ -95,6 +99,8 @@ for nState in statenumberlist:
     temp['covars'] = covars
     temp['transmat'] = transmat
     temp['converged'] = converged
+    temp['allSession'] = allSession
+    temp['errorTrial'] = errorTrial
     Gaussian_HMMFIT = np.concatenate((Gaussian_HMMFIT, np.array([temp])))
 
 np.save('Gaussian_HMMFIT.npy', Gaussian_HMMFIT)
