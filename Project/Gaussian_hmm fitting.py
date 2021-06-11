@@ -23,8 +23,8 @@ def fitHMM(Y, nstate, nfeature, maxrun):
 
 
 # load data
-if os.path.isfile("HMMFIT.npy"):
-    raise Exception("!!'HMMFIT.npy' already exists!!")
+if os.path.isfile("Gaussian_HMMFIT.npy"):
+    raise Exception("!!'Gaussian_HMMFIT.npy' already exists!!")
 alldat = np.load('Steinmetz_main_braingroup.npy', allow_pickle=True)
 allFiringrate = np.concatenate([alldat[k]['groupFiringRate']
                                 for k in range(len(alldat))], axis=1)
@@ -49,7 +49,7 @@ nFeature = 1
 nTrial = allFiringrate.shape[1]
 nAreas = 6
 nBin = allFiringrate.shape[2]
-HMMFIT = np.array([])
+Gaussian_HMMFIT = np.array([])
 count = 0
 
 for nState in statenumberlist:
@@ -95,6 +95,6 @@ for nState in statenumberlist:
     temp['covars'] = covars
     temp['transmat'] = transmat
     temp['converged'] = converged
-    HMMFIT = np.concatenate((HMMFIT, np.array([temp])))
+    Gaussian_HMMFIT = np.concatenate((Gaussian_HMMFIT, np.array([temp])))
 
-np.save('HMMFIT.npy', HMMFIT)
+np.save('Gaussian_HMMFIT.npy', Gaussian_HMMFIT)
