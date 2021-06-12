@@ -4,6 +4,7 @@ from sklearn.utils import check_random_state
 from scipy.stats import poisson
 from hmmlearn.base import _BaseHMM
 
+
 # __all__ = ["PoissonHMM"]
 
 def _check_and_set_n_features(model, X):
@@ -13,12 +14,14 @@ def _check_and_set_n_features(model, X):
                          "expected {}".format(n_features, model.n_features))
     model.n_features = n_features
 
+
 def log_possion_mass(X, lams):
     n_samples, n_dim = X.shape
-    logp = np.zeros((n_samples,1))
+    logp = np.zeros((n_samples, 1))
     for dim in np.arange(n_dim):
         logp = logp + poisson.logpmf(X[:, dim], lams[dim])[:, None]
     return logp
+
 
 class PoissonHMM(_BaseHMM):
     r"""Hidden Markov Model with Possion emissions.
@@ -115,14 +118,16 @@ class PoissonHMM(_BaseHMM):
         self.n_features = self.means_.shape[1]
 
     def _compute_log_likelihood(self, X):
-        logp = np.hstack(log_possion_mass(X, lams) for lams in self.means_)
-        return logp
+        logp = np.zeros_like(X)
+        for lams in self.means_:
+            logp = np.concatenate((logp, log_possion_mass(X, lams)), axis=1)
+        return logp[:, 1:]
 
     def _generate_sample_from_state(self, state, random_state=None):
         random_state = check_random_state(random_state)
         sample = np.empty(self.n_features)
         for i in np.arange(self.n_features):
-            sample[i] = random_state.poisson(self.means_[state,i])
+            sample[i] = random_state.poisson(self.means_[state, i])
         return sample
 
     def _initialize_sufficient_statistics(self):
@@ -140,7 +145,6 @@ class PoissonHMM(_BaseHMM):
             stats['post'] += posteriors.sum(axis=0)
             stats['obs'] += np.dot(posteriors.T, obs)
 
-
     def _do_mstep(self, stats):
         super()._do_mstep(stats)
 
@@ -151,4 +155,3 @@ class PoissonHMM(_BaseHMM):
         if 'm' in self.params:
             self.means_ = ((means_weight * means_prior + stats['obs'])
                            / (means_weight + denom))
-

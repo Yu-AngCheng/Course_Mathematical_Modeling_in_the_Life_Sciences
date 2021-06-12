@@ -95,7 +95,6 @@ for nState in statenumberlist:
     temp['statechain_probability'] = statechain_probability
     temp['minusloglikelihood'] = minusloglikelihood
     temp['means'] = means
-    temp['covars'] = covars
     temp['transmat'] = transmat
     temp['converged'] = converged
     temp['allSession'] = allSession
