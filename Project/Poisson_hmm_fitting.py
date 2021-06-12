@@ -1,16 +1,16 @@
 import numpy as np
-from PossionHMM import PossionHMM
 import scipy.io as io
 import os
 from datetime import datetime
 import matplotlib.pyplot as plt
+from PoissonHMM import PoissonHMM
 
 def fitHMM(Y, nstate, nfeature, maxrun):
     modellist = list()
     scorelist = list()
     for run in range(maxrun):
-        tempmodel = PossionHMM(n_components=nstate,
-                                n_iter=10000, tol=1e-5)
+        tempmodel = PoissonHMM(n_components=nstate,
+                               n_iter=10000, tol=1e-5)
         tempmodel.fit(Y)
         modellist.append(tempmodel)
         scorelist.append(tempmodel.score(Y))
@@ -62,7 +62,6 @@ for nState in statenumberlist:
     converged = np.full([nTrial], np.nan)
     minusloglikelihood = np.full([nTrial], np.nan)
     means = np.full([nTrial, nState, nFeature], np.nan)
-    covars = np.full([nTrial, nState, nFeature, nFeature], np.nan)
     transmat = np.full([nTrial, nState, nState], np.nan)
 
     for trial in range(nTrial):
@@ -83,7 +82,6 @@ for nState in statenumberlist:
                 converged[trial] = finalmodel.monitor_.converged
                 minusloglikelihood[trial] = - finalmodel.score(Y)
                 means[trial, :, :] = finalmodel.means_
-                covars[trial, :, :, :] = finalmodel.covars_
                 transmat[trial, :, :] = finalmodel.transmat_
             except:
                 errorTrial.append(trial)
