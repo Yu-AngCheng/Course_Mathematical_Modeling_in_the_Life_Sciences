@@ -34,24 +34,34 @@ for k in range(len(alldat)):
     nTrial = tmp[1]
     nBin = tmp[2]
 
-    nareas = nGroup  # only the top nareas regions are taken into account
+    nareas = 6  # only the top nareas regions are taken into account
     NN = len(dat['brain_area'])  # number of neurons
     groupindex = nGroup * np.ones(NN, )  # last one is "other"
     for j in range(nareas):
         groupindex[np.isin(dat['brain_area'], brain_groups[j])] = j
     dat['groupindex'] = groupindex
 
-    groupSpk = np.full((0, nTrial, nBin), np.nan)
+    groupSpk = np.full((0, nBin), np.nan)
     groupindex_sorted = np.array([])
+    sessionnumber = np.array([])
+    trialnumber = np.array([])
+    neuronnumber = np.array([])
     for i in range(nareas):
         number_neurons = np.sum(groupindex == i)
         if number_neurons != 0:
-            groupSpk = np.concatenate((groupSpk, dat['spks'][groupindex == i, :, :]), axis=0)
-            groupindex_sorted = np.concatenate((groupindex_sorted, np.tile(i, number_neurons)))
+            temp = dat['spks'][groupindex == i, :, :]
+            groupSpk = np.concatenate((groupSpk, temp.reshape(-1,nBin)), axis=0)
+            groupindex_sorted = np.concatenate((groupindex_sorted, np.tile(np.array([i]),temp.shape[1]*temp.shape[0])))
+            sessionnumber = np.concatenate((sessionnumber, np.tile(np.array([k]),temp.shape[1]*temp.shape[0])))
+            trialnumber = np.concatenate((trialnumber, np.tile(np.arange(temp.shape[1]),temp.shape[0])))
+            neuronnumber = np.concatenate((neuronnumber, np.repeat(np.arange(temp.shape[0]),temp.shape[1])))
+            a = 1
+
     dat['groupSpk'] = groupSpk
     dat['groupindex_sorted'] = groupindex_sorted
-
-    dat['session'] = np.tile(k, nTrial)
+    dat['trialnumber'] = trialnumber
+    dat['session'] = sessionnumber
+    dat['neuronnumber'] = neuronnumber
 
     alldat[k] = dat
 

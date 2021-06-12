@@ -32,6 +32,10 @@ allSession = np.concatenate([alldat[k]['session']
                              for k in range(len(alldat))], axis=0)
 del alldat
 
+# Cut the first 50 Time Bins
+BinCut = 50
+allFiringrate = allFiringrate[:, :, BinCut:]
+
 # fitting parameters
 brain_groups = ["VISa", "VISam", "VISl", "VISp", "VISpm", "VISrl",  # visual cortex
                 "CL", "LD", "LGd", "LH", "LP", "MD", "MG", "PO", "POL", "PT", "RT", "SPF", "TH", "VAL", "VPL", "VPM",

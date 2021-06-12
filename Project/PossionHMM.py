@@ -1,21 +1,10 @@
-import functools
-import inspect
-import logging
-
 import numpy as np
-from scipy import linalg, special
 from sklearn import cluster
 from sklearn.utils import check_random_state
 from scipy.stats import poisson
-from hmmlearn import _utils
-from hmmlearn.stats import log_multivariate_normal_density
 from hmmlearn.base import _BaseHMM
-from hmmlearn.utils import fill_covars, log_mask_zero, log_normalize, normalize
 
 __all__ = ["PoissonHMM"]
-
-_log = logging.getLogger(__name__)
-
 
 def _check_and_set_n_features(model, X):
     _, n_features = X.shape
@@ -159,10 +148,6 @@ class PoissonHMM(_BaseHMM):
         means_prior = self.means_prior
         means_weight = self.means_weight
 
-        # TODO: find a proper reference for estimates for different
-        #       covariance models.
-        # Based on Huang, Acero, Hon, "Spoken Language Processing",
-        # p. 443 - 445
         denom = stats['post'][:, None]
         if 'm' in self.params:
             self.means_ = ((means_weight * means_prior + stats['obs'])
