@@ -36,6 +36,10 @@ allNeuronNumber = np.concatenate([alldat[k]['neuronnumber']
 
 del alldat
 
+# Cut the first 50 Time Bins
+BinCut = 50
+allSpks = allSpks[:, BinCut:]
+
 # fitting parameters
 brain_groups = ["VISa", "VISam", "VISl", "VISp", "VISpm", "VISrl",  # visual cortex
                 "CL", "LD", "LGd", "LH", "LP", "MD", "MG", "PO", "POL", "PT", "RT", "SPF", "TH", "VAL", "VPL", "VPM",
