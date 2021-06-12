@@ -4,7 +4,7 @@ from sklearn.utils import check_random_state
 from scipy.stats import poisson
 from hmmlearn.base import _BaseHMM
 
-__all__ = ["PoissonHMM"]
+# __all__ = ["PoissonHMM"]
 
 def _check_and_set_n_features(model, X):
     _, n_features = X.shape
@@ -12,7 +12,6 @@ def _check_and_set_n_features(model, X):
         raise ValueError("Unexpected number of dimensions, got {} but "
                          "expected {}".format(n_features, model.n_features))
     model.n_features = n_features
-
 
 def log_possion_mass(X, lams):
     n_samples, n_dim = X.shape
