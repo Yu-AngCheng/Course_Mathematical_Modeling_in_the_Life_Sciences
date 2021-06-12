@@ -43,7 +43,7 @@ brain_groups = ["VISa", "VISam", "VISl", "VISp", "VISpm", "VISrl",  # visual cor
                 "ACB", "CP", "GPe", "LS", "LSc", "LSr", "MS", "OT", "SNr", "SI",  # basal ganglia
                 "BLA", "BMA", "EP", "EPd", "MEA"  # cortical subplate
                 ]
-statenumberlist = [3,4]
+statenumberlist = [3, 4, 5]
 maxrun = 10
 nFeature = 1
 nTrial = allFiringrate.shape[1]
@@ -85,7 +85,6 @@ for nState in statenumberlist:
                     transmat[trial, area, :, :] = finalmodel.transmat_
                 except:
                     errorTrial.append(trial)
-
 
         toc = datetime.now()
         print('Elapsed time: %f seconds' % (toc - tic).total_seconds())
