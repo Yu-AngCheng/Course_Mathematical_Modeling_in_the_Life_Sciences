@@ -51,14 +51,14 @@ brain_groups = ["VISa", "VISam", "VISl", "VISp", "VISpm", "VISrl",  # visual cor
                 "ACB", "CP", "GPe", "LS", "LSc", "LSr", "MS", "OT", "SNr", "SI",  # basal ganglia
                 "BLA", "BMA", "EP", "EPd", "MEA"  # cortical subplate
                 ]
-statenumberlist = [1, 2, 3, 4, 5]
+statenumberlist = [2]
 maxrun = 10
 nFeature = 1
 nTrial = allSpks.shape[0]
 nBin = allSpks.shape[1]
 Poisson_HMMFIT = np.array([])
 count = 0
-errorTrial = []
+errorRunningTrial = []
 for nState in statenumberlist:
 
     statechain = np.full([nTrial, nBin], np.nan)
@@ -68,27 +68,27 @@ for nState in statenumberlist:
     means = np.full([nTrial, nState, nFeature], np.nan)
     transmat = np.full([nTrial, nState, nState], np.nan)
 
-    for trial in range(nTrial):
+    for runningtrial in range(nTrial):
 
         tic = datetime.now()
 
         print('Percent:  {0:1.3g}%'.format(count / (len(statenumberlist) * nTrial) * 100))
 
-        Y = allSpks[trial, :].reshape(-1, 1)
+        Y = allSpks[runningtrial, :].reshape(-1, 1)
         count = count + 1
         if np.isnan(Y).all():
             continue
         else:
             try:
                 finalmodel = fitHMM(Y, nState, nFeature, maxrun)
-                statechain[trial, :] = finalmodel.predict(Y)
-                statechain_probability[trial, :, :] = finalmodel.predict_proba(Y)
-                converged[trial] = finalmodel.monitor_.converged
-                minusloglikelihood[trial] = - finalmodel.score(Y)
-                means[trial, :, :] = finalmodel.means_
-                transmat[trial, :, :] = finalmodel.transmat_
+                statechain[runningtrial, :] = finalmodel.predict(Y)
+                statechain_probability[runningtrial, :, :] = finalmodel.predict_proba(Y)
+                converged[runningtrial] = finalmodel.monitor_.converged
+                minusloglikelihood[runningtrial] = - finalmodel.score(Y)
+                means[runningtrial, :, :] = finalmodel.means_
+                transmat[runningtrial, :, :] = finalmodel.transmat_
             except:
-                errorTrial.append(trial)
+                errorRunningTrial.append(runningtrial)
 
         toc = datetime.now()
         print('Elapsed time: %f seconds' % (toc - tic).total_seconds())
@@ -102,7 +102,7 @@ for nState in statenumberlist:
     temp['transmat'] = transmat
     temp['converged'] = converged
     temp['allSession'] = allSession
-    temp['errorTrial'] = errorTrial
-    Gaussian_HMMFIT = np.concatenate((Poisson_HMMFIT, np.array([temp])))
+    temp['errorRunningTrial'] = errorRunningTrial
+    Poisson_HMMFIT = np.concatenate((Poisson_HMMFIT, np.array([temp])))
 
-np.save('Gaussian_HMMFIT.npy', Poisson_HMMFIT)
+np.save('Poisson_HMMFIT.npy', Poisson_HMMFIT)
