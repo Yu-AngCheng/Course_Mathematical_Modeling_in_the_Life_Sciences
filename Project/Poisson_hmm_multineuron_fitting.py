@@ -48,7 +48,7 @@ brain_groups = ["VISa", "VISam", "VISl", "VISp", "VISpm", "VISrl",  # visual cor
                 "ACB", "CP", "GPe", "LS", "LSc", "LSr", "MS", "OT", "SNr", "SI",  # basal ganglia
                 "BLA", "BMA", "EP", "EPd", "MEA"  # cortical subplate
                 ]
-statenumberlist = [1,2,3]
+statenumberlist = [1, 2, 3]
 maxrun = 10
 nFeature = 1
 nTrial = allSpk.shape[1]
