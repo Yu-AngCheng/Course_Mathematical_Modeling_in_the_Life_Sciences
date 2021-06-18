@@ -48,7 +48,7 @@ brain_groups = ["VISa", "VISam", "VISl", "VISp", "VISpm", "VISrl",  # visual cor
                 "ACB", "CP", "GPe", "LS", "LSc", "LSr", "MS", "OT", "SNr", "SI",  # basal ganglia
                 "BLA", "BMA", "EP", "EPd", "MEA"  # cortical subplate
                 ]
-statenumberlist = [1,2]
+statenumberlist = [1,2,3]
 maxrun = 10
 nFeature = 1
 nTrial = allSpk.shape[1]
@@ -56,9 +56,10 @@ nAreas = 6
 nBin = allSpk.shape[2]
 Poisson_multineuron_HMMFIT = np.array([])
 count = 0
-errorTrial = []
+
 for nState in statenumberlist:
 
+    errorTrial = []
     statechain = np.full([nTrial, nAreas, nBin], np.nan)
     statechain_probability = np.full([nTrial, nAreas, nBin, nState], np.nan)
     converged = np.full([nTrial, nAreas], np.nan)
