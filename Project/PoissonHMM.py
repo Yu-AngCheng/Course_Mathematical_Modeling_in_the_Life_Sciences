@@ -110,6 +110,7 @@ class PoissonHMM(_BaseHMM):
                                     random_state=self.random_state)
             kmeans.fit(X)
             self.means_ = kmeans.cluster_centers_
+            self.means_[self.means_<0] = 1e-5
 
     def _check(self):
         super()._check()
