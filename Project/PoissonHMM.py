@@ -119,10 +119,11 @@ class PoissonHMM(_BaseHMM):
         self.n_features = self.means_.shape[1]
 
     def _compute_log_likelihood(self, X):
+        n_samples, n_dim = X.shape
         logp = np.zeros_like(X)
         for lams in self.means_:
             logp = np.concatenate((logp, log_possion_mass(X, lams)), axis=1)
-        return logp[:, 1:]
+        return logp[:, n_dim:]
 
     def _generate_sample_from_state(self, state, random_state=None):
         random_state = check_random_state(random_state)
