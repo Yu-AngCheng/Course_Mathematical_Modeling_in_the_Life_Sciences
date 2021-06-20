@@ -59,7 +59,8 @@ nAreas = 6
 nBin = allSpk.shape[2]
 Poisson_multineuron_HD_HMMFIT = np.array([])
 count = 0
-arealist = [1, 2]
+arealists = [[1, 2], [1, 3], [1, 4], [1, 5], [2, 3], [2, 4], [2, 5], [2, 6],
+             [3, 4], [3, 5], [3, 6], [4, 5], [5, 6]]
 
 for nState in statenumberlist:
 
@@ -72,35 +73,44 @@ for nState in statenumberlist:
     transmat = np.full([nTrial, nAreas, nState, nState], np.nan)
 
     for trial in range(nTrial):
+        for arealist in arealists:
 
-        tic = datetime.now()
+            tic = datetime.now()
 
-        print('Percent:  {0:1.3g}%'.format(count / (len(statenumberlist) * nTrial) * 100))
+            print('Percent:  {0:1.3g}%'.format(count / (len(statenumberlist) * len(arealists) * nTrial) * 100))
 
-        Y = allSpk[arealist, trial, :].transpose()
-        count = count + 1
-        if np.isnan(Y).any():
-            continue
-        else:
-            try:
-                tempmeans = PoissonHMMFIT[1]['means'][trial, :, :]
-                B1_S1 = tempmeans[arealist[0], 0].item()
-                B1_S2 = tempmeans[arealist[0], 1].item()
-                B2_S1 = tempmeans[arealist[1], 0].item()
-                B2_S2 = tempmeans[arealist[1], 1].item()
-                fixmeans = np.array([[B1_S1, B2_S1], [B1_S1, B2_S2], [B1_S2, B2_S1], [B1_S2, B2_S2]])
-                finalmodel = fitHMM(Y, nState, nFeature, maxrun, fixmeans)
-                statechain[trial, arealist, :] = finalmodel.predict(Y)
-                statechain_probability[trial, arealist, :, :] = finalmodel.predict_proba(Y)
-                converged[trial, arealist] = finalmodel.monitor_.converged
-                minusloglikelihood[trial, arealist] = - finalmodel.score(Y)
-                means[trial, arealist, :, :] = finalmodel.means_
-                transmat[trial, arealist, :, :] = finalmodel.transmat_
-            except:
-                errorTrial.append(trial)
+            Y = allSpk[arealist, trial, :].transpose()
+            count = count + 1
+            if np.isnan(Y).any():
+                continue
+            else:
+                try:
+                    tempmeans = PoissonHMMFIT[1]['means'][trial, :, :]
+                    B1_S1 = tempmeans[arealist[0], 0].item()
+                    B1_S2 = tempmeans[arealist[0], 1].item()
+                    if B1_S1 > B1_S2:
+                        temp = B1_S1
+                        B1_S1 = B1_S2
+                        B1_S2 = temp
+                    B2_S1 = tempmeans[arealist[1], 0].item()
+                    B2_S2 = tempmeans[arealist[1], 1].item()
+                    if B2_S1 > B2_S2:
+                        temp = B2_S1
+                        B2_S1 = B2_S2
+                        B2_S2 = temp
+                    fixmeans = np.array([[B1_S1, B2_S1], [B1_S1, B2_S2], [B1_S2, B2_S1], [B1_S2, B2_S2]])
+                    finalmodel = fitHMM(Y, nState, nFeature, maxrun, fixmeans)
+                    statechain[trial, arealist, :] = finalmodel.predict(Y)
+                    statechain_probability[trial, arealist, :, :] = finalmodel.predict_proba(Y)
+                    converged[trial, arealist] = finalmodel.monitor_.converged
+                    minusloglikelihood[trial, arealist] = - finalmodel.score(Y)
+                    means[trial, arealist, :, :] = finalmodel.means_
+                    transmat[trial, arealist, :, :] = finalmodel.transmat_
+                except:
+                    errorTrial.append(trial)
 
-        toc = datetime.now()
-        print('Elapsed time: %f seconds' % (toc - tic).total_seconds())
+            toc = datetime.now()
+            print('Elapsed time: %f seconds' % (toc - tic).total_seconds())
 
     idx = statenumberlist.index(nState)
     temp = dict()
