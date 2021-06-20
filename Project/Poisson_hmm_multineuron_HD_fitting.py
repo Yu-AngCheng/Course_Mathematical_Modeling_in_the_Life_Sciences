@@ -55,28 +55,31 @@ statenumberlist = [4]
 maxrun = 10
 nFeature = 2
 nTrial = allSpk.shape[1]
-nAreas = 6
+nAreasConnection = 15
 nBin = allSpk.shape[2]
 Poisson_multineuron_HD_HMMFIT = np.array([])
 count = 0
-arealists = [[1, 2], [1, 3], [1, 4], [1, 5], [2, 3], [2, 4], [2, 5], [2, 6],
-             [3, 4], [3, 5], [3, 6], [4, 5], [5, 6]]
+arealists = [[0, 1], [0, 2], [0, 3], [0, 4], [0, 5],
+             [1, 2], [1, 3], [1, 4], [1, 5],
+             [2, 3], [2, 4], [2, 5],
+             [3, 4], [3, 5],
+             [4, 5]]
 
 for nState in statenumberlist:
 
     errorTrial = []
-    statechain = np.full([nTrial, nAreas, nBin], np.nan)
-    statechain_probability = np.full([nTrial, nAreas, nBin, nState], np.nan)
-    converged = np.full([nTrial, nAreas], np.nan)
-    minusloglikelihood = np.full([nTrial, nAreas], np.nan)
-    means = np.full([nTrial, nAreas, nState, nFeature], np.nan)
-    transmat = np.full([nTrial, nAreas, nState, nState], np.nan)
+    statechain = np.full([nTrial, nAreasConnection, nBin], np.nan)
+    statechain_probability = np.full([nTrial, nAreasConnection, nBin, nState], np.nan)
+    converged = np.full([nTrial, nAreasConnection], np.nan)
+    minusloglikelihood = np.full([nTrial, nAreasConnection], np.nan)
+    means = np.full([nTrial, nAreasConnection, nState, nFeature], np.nan)
+    transmat = np.full([nTrial, nAreasConnection, nState, nState], np.nan)
 
     for trial in range(nTrial):
         for arealist in arealists:
 
             tic = datetime.now()
-
+            areaidx = arealists.index(arealist)
             print('Percent:  {0:1.3g}%'.format(count / (len(statenumberlist) * len(arealists) * nTrial) * 100))
 
             Y = allSpk[arealist, trial, :].transpose()
@@ -100,12 +103,12 @@ for nState in statenumberlist:
                         B2_S2 = temp
                     fixmeans = np.array([[B1_S1, B2_S1], [B1_S1, B2_S2], [B1_S2, B2_S1], [B1_S2, B2_S2]])
                     finalmodel = fitHMM(Y, nState, nFeature, maxrun, fixmeans)
-                    statechain[trial, arealist, :] = finalmodel.predict(Y)
-                    statechain_probability[trial, arealist, :, :] = finalmodel.predict_proba(Y)
-                    converged[trial, arealist] = finalmodel.monitor_.converged
-                    minusloglikelihood[trial, arealist] = - finalmodel.score(Y)
-                    means[trial, arealist, :, :] = finalmodel.means_
-                    transmat[trial, arealist, :, :] = finalmodel.transmat_
+                    statechain[trial, areaidx, :] = finalmodel.predict(Y)
+                    statechain_probability[trial, areaidx, :, :] = finalmodel.predict_proba(Y)
+                    converged[trial, areaidx] = finalmodel.monitor_.converged
+                    minusloglikelihood[trial, areaidx] = - finalmodel.score(Y)
+                    means[trial, areaidx, :, :] = finalmodel.means_
+                    transmat[trial, areaidx, :, :] = finalmodel.transmat_
                 except:
                     errorTrial.append(trial)
 
